@@ -8,15 +8,23 @@ import sympy as sp
 import numpy as np
 
 from dotenv import load_dotenv
-
+"""
 load_dotenv()
+"""
+TOKEN = os.getenv("DISCORD_TOKEN")
+
+# 確保 TOKEN 存在，避免部署後出錯
+if not TOKEN:
+    raise ValueError("DISCORD_TOKEN is not set in the environment variables.")
 
 # Discord Bot 初始化
 intents = nextcord.Intents.default()
 intents.message_content = True
+bot = commands.Bot(intents=intents)
+"""
 TOKEN = os.getenv("DISCORD_TOKEN")
 bot = commands.Bot(intents=intents)
-
+"""
 
 
 @bot.event
