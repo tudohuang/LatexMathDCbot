@@ -3,3 +3,4 @@ matplotlib
 sympy
 numpy
 python-dotenv
+flask
