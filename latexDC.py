@@ -37,23 +37,18 @@ bot = commands.Bot(intents=intents)
 
 @bot.event
 async def on_ready():
-    try:
-        print(f"{bot.user} logged in")
-    except Exception as e:
-        print(f"發生錯誤: {e}")
-        print("我好瞜，但有點問題發生了！")
+    print(f"{bot.user} logged in!")
 
 # 繪製 LaTeX 圖形
 async def render_latex(latex_content, bg_color, font_color, interaction):
     try:
-        # 避免超時，先延遲回應
         await interaction.response.defer()
         formulas = latex_content.splitlines()
         fig_width = max(4, 0.1 * max([len(line) for line in latex_content.splitlines()]))
         fig_height = 0.4 + len(formulas) * 0.3
         font_size = max(12, min(30, int(0.5 * len(latex_content))))
         fig, ax = plt.subplots(figsize=(fig_width, fig_height), dpi=300)
-        ax.set_facecolor('none')
+        ax.set_facecolor(bg_color)
         ax.axis('off')
 
         for i, formula in enumerate(formulas):
@@ -118,6 +113,48 @@ async def plot_function(interaction: nextcord.Interaction, equation: str, x_min:
         await interaction.followup.send(file=nextcord.File(buf, 'plot.png'))
     except Exception as e:
         await interaction.followup.send(f"無法繪製圖形: {str(e)}")
+
+# 矩陣運算指令
+@bot.slash_command(name="matrix", description="執行矩陣運算")
+async def matrix_calc(interaction: nextcord.Interaction, matrix1: str, matrix2: str = None, operation: str = "multiply"):
+    try:
+        await interaction.response.defer()
+        m1 = np.array(eval(matrix1))
+        if matrix2:
+            m2 = np.array(eval(matrix2))
+
+        if operation == "multiply":
+            result = np.dot(m1, m2)
+        elif operation == "transpose":
+            result = m1.T
+        elif operation == "inverse":
+            result = np.linalg.inv(m1)
+        else:
+            raise ValueError("未知矩陣操作")
+
+        await interaction.followup.send(f"矩陣運算結果: \n{result}")
+    except Exception as e:
+        await interaction.followup.send(f"無法執行矩陣運算: {str(e)}")
+
+# 傅立葉變換
+@bot.slash_command(name="fourier", description="計算傅立葉變換或逆變換")
+async def fourier_transform(interaction: nextcord.Interaction, function: str, transform_type: str = "forward"):
+    try:
+        await interaction.response.defer()
+        x, k = sp.symbols('x k')
+        expr = sp.sympify(function)
+
+        if transform_type == "forward":
+            ft = sp.fourier_transform(expr, x, k)
+        elif transform_type == "inverse":
+            ft = sp.inverse_fourier_transform(expr, k, x)
+        else:
+            raise ValueError("未知的傅立葉變換類型")
+
+        latex_result = sp.latex(ft)
+        await interaction.followup.send(f"傅立葉變換結果: $${latex_result}$$")
+    except Exception as e:
+        await interaction.followup.send(f"無法計算傅立葉變換: {str(e)}")
 
 # 啟動 bot
 if __name__ == "__main__":
