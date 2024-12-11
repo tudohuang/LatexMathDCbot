@@ -26,18 +26,15 @@ TOKEN = os.getenv("DISCORD_TOKEN")
 bot = commands.Bot(intents=intents)
 """
 
-
 @bot.event
 async def on_ready():
-    # 清除並重新同步指令
     try:
-        # 清除所有指令
-        await bot.clear_application_commands()
-        # 同步所有指令
-        synced = await bot.sync_application_commands()
-        print(f"已清除並同步 {len(synced)} 個指令: {[cmd.name for cmd in synced]}")
+        # 僅輸出登入訊息
+        print(f"{bot.user} logged in")
     except Exception as e:
-        print(f"同步指令失敗: {e}")
+        print(f"發生錯誤: {e}")
+        print("我好瞜，但有點問題發生了！")
+
 
 # 動態計算圖像寬度
 def calculate_fig_width(latex_content):
