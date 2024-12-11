@@ -207,7 +207,7 @@ async def fourier_transform(interaction: nextcord.Interaction, function: str, tr
             raise ValueError("未知的傅立葉變換類型")
 
         latex_result = sp.latex(ft)
-        await await render_latex(f"$${latex_result}$$", "none", "white", interaction)
+        await  render_latex(f"$${latex_result}$$", "none", "white", interaction)
 
     except Exception as e:
         await interaction.response.send_message(f"無法計算傅立葉變換: {str(e)}")
